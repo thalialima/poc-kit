@@ -16,23 +16,33 @@ public class CrudUserService {
     @Autowired
     private UserRepository userRepository;
 
-    private List<UserDTO> list(){
+    public List<UserDTO> list(){
         List<User> users = userRepository.findAll();
         return UserDTO.toUserDtoList(users);
     }
 
+    public UserDTO listById(Long id){
+        Optional<User> optional = userRepository.findById(id);
+        if(optional.isPresent()){
+            User user = optional.get();
+            return new UserDTO(user);
+        }
+        return null;
+    }
+
     @Transactional
-    private void save(UserForm userForm){
+    public UserDTO save(UserForm userForm){
         User user = User.builder()
                 .name(userForm.getName())
                 .email(userForm.getEmail())
                 .phone(userForm.getPhone())
                 .build();
         userRepository.save(user);
+        return new UserDTO(user);
     }
 
     @Transactional
-    public boolean update(Long id, UserForm userForm){
+    public UserDTO update(Long id, UserForm userForm){
         Optional<User> optional = userRepository.findById(id);
         if(optional.isPresent()){
             User user = optional.get();
@@ -40,12 +50,17 @@ public class CrudUserService {
             user.setEmail(userForm.getEmail());
             user.setPhone(userForm.getPhone());
             userRepository.save(user);
-            return true;
+            return new UserDTO(user);
         }
-        return false;
+        return null;
     }
 
-    public void delete(Long id){
+    public boolean delete(Long id){
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isPresent()){
+            return false;
+        }
         userRepository.deleteById(id);
+        return true;
     }
 }

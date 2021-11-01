@@ -3,6 +3,8 @@ package com.keyrus.kit.quiz.model;
 import lombok.*;
 
 import javax.persistence.*;
+
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
